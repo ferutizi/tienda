@@ -24,9 +24,5 @@ arrayElement.forEach(item => {
 lista.appendChild(fragment);
 
 
-/* <li class="list">
-    <b>Nombre: </b><span class="text-element">element....</span>
-</li> */
-
 
 
