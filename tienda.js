@@ -28,7 +28,7 @@ const pintarCards = (data) => {
         templateCard.querySelector('h5').textContent = producto.title;
         templateCard.querySelector('p').textContent =  producto.precio;
         templateCard.querySelector('img').setAttribute('src', producto.thumbnailUrl)
-        templateCard.querySelector('.btn').dataset.id = producto.id;
+        templateCard.querySelector('button').dataset.id = producto.id;
         const clone = templateCard.cloneNode(true);
         fragment.appendChild(clone);
     })
@@ -40,15 +40,15 @@ cards.addEventListener('click', e => {
 })
 
 const agregarCarrito = e => {
-    if(e.target.classList.contains('btn')) {
-       setCarrito(e.target.parentElement)
+    if(e.target.classList.contains('btn-dark')) {
+       setCarrito(e.target.parentElement);
     }
     e.stopPropagation(); 
 }
 
 const setCarrito = objeto => {
     const producto = {
-        id: objeto.querySelector('.btn').dataset.id,
+        id: objeto.querySelector('button').dataset.id,
         title: objeto.querySelector('h5').textContent,
         precio: objeto.querySelector('p').textContent,
         cantidad: 1,
@@ -66,8 +66,8 @@ const pintarCarrito = () => {
         templateCarrito.querySelector('th').textContent = producto.id;
         templateCarrito.querySelectorAll('td')[0].textContent = producto.title;
         templateCarrito.querySelectorAll('td')[1].textContent = producto.cantidad;
-        templateCarrito.querySelector('.btn-info').dataset = producto.id;
-        templateCarrito.querySelector('.btn-danger').dataset = producto.id;
+        templateCarrito.querySelector('.btn-info').dataset.id = producto.id;
+        templateCarrito.querySelector('.btn-danger').dataset.id = producto.id;
         templateCarrito.querySelector('span').textContent = producto.cantidad * producto.precio;
 
         const clone = templateCarrito.cloneNode(true);
@@ -82,6 +82,7 @@ const pintarFooter = () => {
     footer.innerHTML = '';
     if(Object.keys(carrito).length === 0) {
         footer.innerHTML = `<th scope="row" colspan="5">Carrito vacío - comience a comprar!</th>`;
+        return
     }
 
     const nCantidad = Object.values(carrito).reduce((acc, {cantidad}) => acc + cantidad, 0);
@@ -94,32 +95,33 @@ const pintarFooter = () => {
     fragment.appendChild(clone);
     footer.appendChild(fragment);
 
-    const btnVaciar = document.getElementById('vaciar-carrito');
+   const btnVaciar = document.getElementById('vaciar-carrito');
     btnVaciar.addEventListener('click', (e) => {
-        items.innerHTML = '';
-        footer.innerHTML = `<th scope="row" colspan="5">Carrito vacío - comience a comprar!</th>`;
+        carrito = {};
+        pintarCarrito();
     })
 }
 
 items.addEventListener('click', (e) => {
     btnAccion(e);
+    
 })
 
 const btnAccion = e => {
     if(e.target.classList.contains('btn-info')) {
-        const producto = carrito[e.target.dataset.id]
+        const producto = carrito[e.target.dataset.id];
         producto.cantidad++;
         carrito[e.target.dataset.id] = { ...producto };
         pintarCarrito();
-    }
-
-    if(e.target.classList.contains('btn-danger')) {
-        const producto = carrito[e.target.dataset.id]
-        producto.cantidad--;
-        if(prod.cantidad === 0) {
-            delete carrito[e.target.dataset.id]
+    } else {
+        if(e.target.classList.contains('btn-danger')) {
+            const producto = carrito[e.target.dataset.id];
+            producto.cantidad--;
+            if(producto.cantidad === 0) {
+                delete carrito[e.target.dataset.id];
+            }
+            pintarCarrito();
         }
-        pintarCarrito();
     }
 
     e.stopPropagation();
